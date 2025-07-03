@@ -1,0 +1,19 @@
+[project]
+name = "momo"
+version = "0.1.0"
+description = "Tiny method of moments library"
+readme = "README.md"
+authors = [
+    { name = "saeedece", email = "git@saeedc.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "chex>=0.1.89",
+    "gmsh>=4.14.0",
+    "jax[cuda12]>=0.6.2",
+    "pyvista>=0.45.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
