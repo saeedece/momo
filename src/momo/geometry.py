@@ -35,7 +35,7 @@ class Geometry:
     triangles_edges: Array
 
     @classmethod
-    def from_gmsh(cls):
+    def from_gmsh(cls) -> Geometry:
         _, node_coords, _ = gmsh.model.mesh.getNodes(dim=-1, tag=1)
         _, _, node_tags = gmsh.model.mesh.getElements(dim=2, tag=-1)
         physical_ids = gmsh.model.getPhysicalGroups(2)
@@ -57,15 +57,11 @@ class Geometry:
             order = jnp.argsort(key)
 
             node_owners = owners[order].reshape(-1, 2)
-            node_values = (
-                jnp.column_stack((key[order[::2]] >> 32, key[order[::2]] & 0xFFFFFFFF))
-                .reshape(-1, 2)
-                .astype(jnp.uint32)
-            )
-
-            updated_key = (node_values[:, 0].astype(jnp.uint64) << 32) | node_values[
-                :, 1
-            ].astype(jnp.uint64)
+            node_values = jnp.column_stack(
+                (key[order[::2]] >> 32, key[order[::2]] & 0xFFFFFFFF)
+            ).reshape(-1, 2)
+            updated_key = (node_values[:, 0] << 32) | node_values[:, 1]
+            node_values = node_values.astype(jnp.uint32)
 
             edges = jnp.concat((node_values, node_owners), axis=1)
             triangles_edges = jnp.searchsorted(updated_key, key).reshape(-1, 3)
